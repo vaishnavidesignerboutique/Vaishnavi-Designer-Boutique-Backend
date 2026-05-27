@@ -7,6 +7,7 @@ import { healthRouter } from "./routes/health.js";
 import { authRouter } from "./routes/auth.js";
 import { inquiriesRouter } from "./routes/inquiries.js";
 import { blogsRouter, adminBlogsRouter } from "./routes/blogs.js";
+import { overviewRouter } from "./routes/overview.js";
 import { uploadsRouter } from "./routes/uploads.js";
 import { errorHandler, notFound } from "./middleware/error.js";
 
@@ -31,6 +32,7 @@ export function buildApp(): express.Express {
   app.use("/inquiries", inquiriesRouter);
   app.use("/blogs", blogsRouter);
   app.use("/admin/blogs", adminBlogsRouter);
+  app.use("/admin/overview", overviewRouter);
   app.use("/uploads", uploadsRouter);
 
   app.use(notFound);

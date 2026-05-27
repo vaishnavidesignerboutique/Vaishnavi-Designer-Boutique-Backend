@@ -4,7 +4,12 @@ import { z } from "zod";
 const schema = z.object({
   PORT: z.coerce.number().int().positive().default(4000),
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
-  CORS_ORIGIN: z.string().url(),
+  // Comma-separated list of allowed origins, e.g. "http://localhost:3009,https://app.example.com"
+  CORS_ORIGIN: z
+    .string()
+    .min(1)
+    .transform((s) => s.split(",").map((o) => o.trim()).filter(Boolean))
+    .pipe(z.array(z.string().url()).min(1)),
 
   JWT_SECRET: z.string().min(32, "JWT_SECRET must be at least 32 chars"),
   JWT_EXPIRES_IN: z.string().default("24h"),

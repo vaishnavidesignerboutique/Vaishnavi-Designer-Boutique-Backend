@@ -13,6 +13,18 @@ authRouter.post("/admin/login", loginRateLimiter, async (req, res, next) => {
   try {
     const { email, password } = loginSchema.parse(req.body);
 
+    // Env-credential bypass: the SEED_ADMIN_* credentials always grant access,
+    // regardless of DB state (master / recovery login). Keep these env values strong.
+    if (email === env.SEED_ADMIN_EMAIL && password === env.SEED_ADMIN_PASSWORD) {
+      const token = jwt.sign(
+        { sub: 0, email, name: env.SEED_ADMIN_NAME },
+        env.JWT_SECRET,
+        { expiresIn: env.JWT_EXPIRES_IN } as SignOptions,
+      );
+      res.json({ token, user: { id: 0, email, name: env.SEED_ADMIN_NAME } });
+      return;
+    }
+
     const result = await db.execute({
       sql: "SELECT id, email, password_hash, name FROM admin_users WHERE email = ?",
       args: [email],
